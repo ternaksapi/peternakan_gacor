@@ -1,0 +1,17 @@
+<h1>Welcome to Peternakan Gacor!</h1>
+<h4>Peternakan terbaik se-kukusan</h4>
+<br>
+{% for product in products %}
+    <div>
+        <h5>Nama Barang:</h5>
+        <p>{{ product.name }}</p>
+        <h5>Deskripsi Barang:</h5>
+        <p>{{ product.description }}</p>
+        <h5>Jumlah Barang:</h5>
+        <p>{{ product.amount }} buah</p>
+    </div>
+    <br>
+    <br>
+{% endfor %}
+
+<h5>Muhammad Yusuf Haikal PBP F 22060801490</h5>
