@@ -6,6 +6,8 @@ Kelas          : PBP F
 
 Link Adapable  :https://peternakan-gacor.adaptable.app/
 
+# Tugas 2
+
 ## Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
 Berikut adalah penjelasan cara implementasi  unuk masing - masing step pada checklist:
 
