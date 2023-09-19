@@ -1,37 +1,40 @@
 from django.shortcuts import render
+from main.forms import ItemsForm
+from django.urls import reverse
+from django.http import HttpResponseRedirect, HttpResponse
+from main.models import Items
+from django.core import serializers
 
 # Create your views here.
-products_data = [
-    {
-        'name': 'Padi',
-        'description': 'Tanaman padi (Oryza sativa L.) adalah tanaman penghasil beras yang merupakan sumber karbohidrat bagi sebagian penduduk dunia',
-        'amount': 30,
-    },
-    {
-        'name': 'Jagung',
-        'description': 'Tanaman jagung (Zea mays) adalah salah satu tanaman serealia penting di dunia dan digunakan untuk berbagai keperluan.',
-        'amount': 40,
-    },
-    {
-        'name': 'Daging Wagyu',
-        'description': 'Daging wagyu adalah daging sapi yang berasal dari Jepang. Daging ini memiliki tekstur yang lembut dan lemak yang melimpah.',
-        'amount': 5,
-    },
-    {
-        'name': 'Susu Kambing',
-        'description': 'Susu kambing adalah susu yang dihasilkan oleh kambing. Susu kambing memiliki kandungan nutrisi yang lebih tinggi dibandingkan dengan susu sapi.',
-        'amount' : 0,
-    },
-    {
-        'name': 'Telur Ayam',
-        'description': 'Telur ayam adalah telur yang dihasilkan oleh ayam. Telur ayam memiliki kandungan nutrisi yang tinggi dan dapat dikonsumsi dalam berbagai bentuk.',
-        'amount' : 60
-    }
-]
-
 def show_main(request):
+    items = Items.objects.all()
     context = {
-        'products' : products_data,
+        'products' : items
     }
-
     return render(request, "main.html", context)
+
+def create_items(request):
+    form = ItemsForm(request.POST or None)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        return HttpResponseRedirect(reverse('main:show_main'))
+    
+    context = {'form' : form}
+    return render(request, "create_product.html", context)
+
+def show_xml(request):
+    data = Items.objects.all()
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+def show_json(request):
+    data = Items.objects.all()
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
+def show_xml_by_id(request, id):
+    data = Items.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+def show_json_by_id(request, id):
+    data = Items.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
