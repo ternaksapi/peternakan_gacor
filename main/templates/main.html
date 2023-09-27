@@ -3,7 +3,10 @@
 {% block content %}
 <h1>Welcome to Peternakan Gacor!</h1>
 <h4>Peternakan terbaik se-kukusan</h4>
+<h5>Name:</h5>
+<p>{{ name }}</p>
 <br>
+
 {% for product in products %}
     <div>
         <h5>Nama Barang:</h5>
@@ -41,5 +44,11 @@
             Add New Items
         </button>
     </a>
+    <a href="{% url 'main:logout' %}">
+        <button>
+            Logout
+        </button>
+    </a>
+    <h5>Sesi terakhir login: {{ last_login }}</h5>
 <h5>Muhammad Yusuf Haikal PBP F 22060801490</h5>
 {% endblock content %}
