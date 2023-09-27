@@ -512,7 +512,7 @@ urlpatterns = [
 ![xmlbyid](https://github.com/ternaksapi/peternakan_gacor/assets/116947973/3e503348-0841-424a-80db-57be5f7aa8ee)
 ![jsonbyid](https://github.com/ternaksapi/peternakan_gacor/assets/116947973/56cfa0ae-9bed-4bec-89d3-8e8df40d5828)
 
-# Tugas 3
+# Tugas 4
 
 ## Apa itu Django  `UserCreationForm` dan jelaskan apa kelebihan dan kekurangannya
 `UserCreationForm` merupakan impor formulir bawaan yang memudahkan pembuatan formulir pendaftaran pengguna dalam aplikasi web yang dikembangkan dengan Django. 
