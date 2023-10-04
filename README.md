@@ -651,6 +651,310 @@ Fungsi ini akan menerima username dan password dari penggunaka kemudian melakuka
                 <td><input type="password" name="password" placeholder="Password" class="form-control"></td>
             </tr>
 
+# Tugas 4
+
+##  Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step!
+
+### Kustomisasi halaman daftar inventori menjadi lebih berwarna maupun menggunakan apporach lain seperti menggunakan Card.
+- Untuk tahap ini, saya akan membuat agar masing - masing barang dalam inventori ditampilkan menggunakan `card` yang dimiliki oleh `Bootstrap`..
+- Untuk menggunakan class `card`, pertama saya menambahkan container dengan line `<div class="container">`. Ini akan membuat agar semua yang terdapat dalam halaman terpusat ke tengah dari halaman.
+- Selanjutnya, untuk masing - masing produk yang ditampilkan, saya menggunakan class `card` yang akan menampilkan masing produk dalam container `card`yang memiliki border dan padding. Kode saya saya tambahkan menjadi sebagai berikut:
+```
+...
+{% for product in products %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 class="card-title">Nama Barang:</h5>
+            <p class="card-text">{{ product.name }}</p>
+            <h5 class="card-title">Deskripsi Barang:</h5>
+            <p class="card-text">{{ product.description }}</p>
+            <h5 class="card-title">Jumlah Barang:</h5>
+            <p class="card-text">{{ product.amount }} buah</p>
+        </div>
+    </div>
+    {% endfor %}
+...
+```
+
+-  Selanjutnya, saya ingin menambahkan sebuah Navbar yang menampilkan username pengguna yang sedang login dan tombol logout. 
+- Pertama, saya menggunakan class `.navbar-brand` sebagai navbar saya. dalam navbar, saya memasukkan tulisan `Selamat datang, {nama}` untuk menampilkan nama user yang login.
+- Selanjutnya, saya menambahkan tombol logout didalam navbar
+- Bentuk akhir kode akan menjadi sebagai berikut:
+```
+{% extends 'base.html' %}
+
+{% block content %}
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1">Selamat datang, {{ request.user.username }}</span>
+        <a class="nav-link" href="{% url 'main:logout' %}">
+            <button class="btn btn-danger">Logout</button>
+        </a>
+...
+{% endblock content %}
+```
+
+- Selanjutnya, saya merapihkan bagian bawah dari halaman main dengan menggunakan `text-center` untuk tombol menambahkan barang baru dan Sesi login terkahir.
+```
+<div class="text-center">
+        <a href="{% url 'main:create_items' %}">
+            <button class="btn btn-primary">Add New Items</button>
+        </a>
+    </div>
+
+    <div class="text-center mt-4">
+        <h5>Sesi terakhir login: {{ last_login }}</h5>
+        <h5>Muhammad Yusuf Haikal PBP F 22060801490</h5>
+    </div>
+</div>
+```
+
+### Kustomisasi halaman login, register, dan tambah inventori semenarik mungkin.
+
+- Untuk halaman login dan register, saya akan menggunakan class `Card` yang disediakan oleh Bootstrap.
+
+- Mirip dengan sebelumnya, pertama saya membuat class `container` dan `row` untuk menata halaman dan mengelompokannya kedalam masing - masing `container` dan `row`. Setelah itu baru saya membuat class `card`.
+- Dalam `card`, kemudian saya memasukkan masing - masing form field login dengan menggunakan `form-group`. Saya juga menggunakan `form-control` untuk menata susunan form.
+- Hasil akhir `login.htmml` akan seperti sebagai berikut:
+```
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>Login</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="text-center">Login</h1>
+
+                    <form method="POST" action="">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="username">Username:</label>
+                            <input type="text" name="username" id="username" placeholder="Username" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" name="password" id="password" placeholder="Password" class="form-control">
+                        </div>
+                        <br>
+                        <div class="text-center">
+                            <button class="btn btn-primary" type="submit">Login</button>
+                        </div>
+                    </form>
+
+                    {% if messages %}
+                    <ul class="mt-3">
+                        {% for message in messages %}
+                        <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    <p class="mt-3">Don't have an account yet? <a href="{% url 'main:register' %}">Register Now</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+```
+
+- Untuk register, saya kurang lebih menerapkan prinsip yang sama dengan halaman login.Namun, saya menambahkan sedikit kode CSS untuk meratakan dan merapihkan tampilan form. 
+```
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>Register</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-6">
+            <div class="card" style="max-width: 500px;">
+                <div class="card-body">
+                    <h1 class="text-center">Register</h1>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="{{ form.username.id_for_label }}">Username:</label>
+                            {{ form.username }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.password1.id_for_label }}">Password:</label>
+                            {{ form.password1 }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.password2.id_for_label }}">Confirm Password:</label>
+                            {{ form.password2 }}
+                        </div>
+                        <br>
+                        <div class="text-center">
+                            <button class="btn btn-primary" type="submit">Register</button>
+                        </div>
+                    </form>
+
+                    {% if messages %}
+                    <ul class="mt-3">
+                        {% for message in messages %}
+                        <li>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+
+                    <style>
+                    .form-group label {
+                        display: inline-block;
+                        width: 150px; 
+                        margin-bottom: 0; 
+                    }
+
+                    .form-group {
+                        margin-bottom: 10px;
+                    }
+                    </style>
+                    {% endblock content %}
+```
+
+- Untuk halaman tambah produk, saya juga menerapkan class `container`, `row`, dan `card` yang dimiliki Bootstrap.
+
+- Saya menerapkan prinsip yang sama pada tahapan sebelumnya, namun disini saya melakukan perubahan pada file forms.py untuk menambahkan `form-control` kedalam field masing - masing, dan mengubah tipe input `description` menjadi `Textarea` agar terlihat lebih rapih.
+```
+from django.forms import ModelForm, Textarea
+from main.models import Items
+
+class ItemsForm(ModelForm):
+    class Meta:
+        model = Items
+        fields = ['name', 'amount', 'description']
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['amount'].widget.attrs.update({'class': 'form-control'})
+        self.fields['description'].widget = Textarea(attrs={'class': 'form-control'})
+```
+
+- Setelah itu, maka `create_product` akan menjadi:
+```
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card mt-5">
+                <div class="card-header">
+                    <h1 class="text-center">Add New Product</h1>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="{{ form.name.id_for_label }}">Name:</label>
+                            {{ form.name }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.description.id_for_label }}">Description:</label>
+                            {{ form.description }}
+                        </div>
+                        <div class="form-group">
+                            <label for="{{ form.amount.id_for_label }}">Amount:</label>
+                            {{ form.amount }}
+                        </div>
+                        <br>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Add Item</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+```
+
+## Jelaskan manfaat dari setiap element selector dan kapan waktu yang tepat untuk menggunakannya.
+Element Selector pada CSS adalah suatu selector yang digunakan untuk mengubah style elemen HTML dengan tag yang spesifik. Kita menggunakan element selector ketika kita ingin menerapkan style yang sama pada elemen yang memiliki tag sama. Contohnya, apabila kita ingin mengubah semua elemen dengan tag `h1`, maka kita dapat menggunakan:
+```
+h1 {
+    background-color: yellow;
+}
+```
+
+Dalam CSS, terdapat beberapa selector lain seperti ID selector dan Class selector. 
+
+ID selector digunakan ketika kita ingin mengubah style elemen HTML dengan ID pada tag yang tertera. Semisal kita memiliki element dengan ID=bag1. Kita dapat menggunakan ID selector seperti berikut:
+```
+#bag1 {
+  text-align: center;
+  color: red;
+}
+```
+Class selector digunakan untuk mengubah semua elemen yang masuk dalam class yang sama. Caranya sama dengan selector sebelumnya, hanya saja kita menggunakan nama class yang kita ingin ubah stylenya.
+```
+.card_header {
+  ....
+}
+```
+
+## Jelaskan HTML5 Tag yang kamu ketahui.
+- <html> : Digunakan untuk mendefinisikan suatu file HTML.
+
+- <p> : Digunakan untuk membuat suatu paragraf
+
+- <a> : Digunakan untuk menempatkan suatu tautan hyperlink
+
+- <br> : Digunakan untuk membuat suatu line break.
+ 
+- <header>: Digunakan untuk mendefinisikan bagian kepala dari sebuah dokumen atau elemen. Biasanya digunakan untuk menampilkan judul halaman, logo, atau elemen kepala lainnya.
+
+- <nav>: Digunakan untuk mendefinisikan bagian navigasi pada sebuah halaman web. Ini biasanya berisi menu navigasi utama atau tautan ke halaman lain di situs web.
+
+- <main>: Digunakan untuk mengelompokkan konten utama dari halaman web. Ini membantu mesin pencari dan pembaca layar untuk mengidentifikasi konten utama dengan lebih baik.
+
+- <article>: Digunakan untuk mengelompokkan konten independen atau mandiri dalam sebuah halaman web. Ini bisa berupa berita, posting blog, atau konten lain yang dapat berdiri sendiri.
+
+- <section>: Digunakan untuk mengelompokkan konten yang terkait atau serupa dalam sebuah halaman web. Ini membantu dalam mengorganisasi dan memahami struktur dokumen.
+
+- <aside>: Digunakan untuk mengelompokkan konten yang terkait dengan konten utama, tetapi bisa dianggap sebagai konten sampingan. Ini sering digunakan untuk menyertakan elemen seperti sidebar atau widget.
+
+- <footer>: Digunakan untuk mendefinisikan bagian bawah dari sebuah halaman atau elemen. Ini sering digunakan untuk menampilkan informasi kontak, tautan ke halaman terkait, atau hak cipta.
+
+- <figure> dan <figcaption>: Digunakan bersama untuk menampilkan konten media, seperti gambar, audio, atau video, dengan elemen <figcaption> digunakan untuk memberikan deskripsi atau keterangan untuk konten media tersebut.
+
+- <video> dan <audio>: Digunakan untuk menambahkan media video atau audio ke halaman web. Ini memungkinkan untuk menyematkan video dan audio dengan dukungan yang lebih baik.
+
+- <canvas>: Digunakan untuk membuat gambar dan grafik dengan menggunakan JavaScript. Ini sering digunakan untuk menggambar grafik interaktif atau animasi di halaman web.
+
+- <input type="date/time/color>: Digunakan untuk menampilkan elemen input dengan tipe khusus, seperti input tanggal, waktu, atau warna. Ini membantu dalam mengumpulkan data yang spesifik.
+
+- <progress>: Digunakan untuk menampilkan elemen kemajuan yang mengukur kemajuan atau status dari tugas yang sedang berlangsung.
+
+- <meter>: Digunakan untuk menampilkan elemen meteran yang mengukur dan menampilkan nilai dalam bentuk grafik, seperti seberapa besar persentase suatu tugas yang selesai.
+
+- <details> dan <summary>: Digunakan bersama untuk membuat elemen yang dapat diperluas (expandable) dan berisi konten tambahan yang dapat ditampilkan atau disembunyikan dengan mengklik tautan <summary>.
+
+- <mark>: Digunakan untuk menyoroti teks atau konten dalam dokumen dengan warna latar belakang kuning, biasanya digunakan untuk menandai kata kunci atau teks penting.
+
+
+## Jelaskan perbedaan antara margin dan padding.
+Perbedaan antara margin dan padding adalah bahwa margin adalah ruang di luar elemen yang memengaruhi jarak antara elemen tersebut dengan elemen tetangganya, sedangkan padding adalah ruang di sekitar konten dalam elemen yang memengaruhi jarak antara konten dan tepi elemen itu sendiri.
+
+## Jelaskan perbedaan antara framework CSS Tailwind dan Bootstrap. Kapan sebaiknya kita menggunakan Bootstrap daripada Tailwind, dan sebaliknya?
+
+Perbedaan utama antara framework CSS Bootstrap dan Tailwind adalah dalam desain dan pendekatan pengembangan yang digunakan. Bootstrap memiliki template desain untuk berbagai komponen yang beragam sehingga merupakan pilihan baik untuk proyek-proyek yang ingin dibangun dengan cepat dan membutuhkan gaya tampilan yang profesional. Di sisi lain, Tailwind memberikan tingkat kustomisasi yang lebih tinggi dengan pendekatan * utility first * yang memungkinkan pengembang untuk membangun tampilan yang sangat unik dan sesuai dengan kebutuhan desain mereka. Tailwind juga lebih ringan dan efisien dalam hal ukuran dan kinerja halaman web. Pilihan antara keduanya tergantung pada preferensi pengembang dan kebutuhan spesifik proyek, jika ingin membangun proyek yang cepat dan sederhana, serta mudah untuk dibuat maka gunakan Bootstrap. Apabila ingin membangun proyek dengan kebebasan yang lebih banyak, namun harus melakukan lebih banyak *coding*, gunakan Tailwind.
             <tr>
                 <td></td>
                 <td><input class="btn login_btn" type="submit" value="Login"></td>
