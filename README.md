@@ -773,43 +773,43 @@ Class selector digunakan untuk mengubah semua elemen yang masuk dalam class yang
 ```
 
 ## Jelaskan HTML5 Tag yang kamu ketahui.
-- <html> : Digunakan untuk mendefinisikan suatu file HTML.
+- `<html>` : Digunakan untuk mendefinisikan suatu file HTML.
 
-- <p> : Digunakan untuk membuat suatu paragraf
+- `<p>` : Digunakan untuk membuat suatu paragraf
 
-- <a> : Digunakan untuk menempatkan suatu tautan hyperlink
+- `<a>` : Digunakan untuk menempatkan suatu tautan hyperlink
 
-- <br> : Digunakan untuk membuat suatu line break.
+- `<br>` : Digunakan untuk membuat suatu line break.
  
-- <header>: Digunakan untuk mendefinisikan bagian kepala dari sebuah dokumen atau elemen. Biasanya digunakan untuk menampilkan judul halaman, logo, atau elemen kepala lainnya.
+- `<header>`: Digunakan untuk mendefinisikan bagian kepala dari sebuah dokumen atau elemen. Biasanya digunakan untuk menampilkan judul halaman, logo, atau elemen kepala lainnya.
 
-- <nav>: Digunakan untuk mendefinisikan bagian navigasi pada sebuah halaman web. Ini biasanya berisi menu navigasi utama atau tautan ke halaman lain di situs web.
+- `<nav>`: Digunakan untuk mendefinisikan bagian navigasi pada sebuah halaman web. Ini biasanya berisi menu navigasi utama atau tautan ke halaman lain di situs web.
 
-- <main>: Digunakan untuk mengelompokkan konten utama dari halaman web. Ini membantu mesin pencari dan pembaca layar untuk mengidentifikasi konten utama dengan lebih baik.
+- `<main>`: Digunakan untuk mengelompokkan konten utama dari halaman web. Ini membantu mesin pencari dan pembaca layar untuk mengidentifikasi konten utama dengan lebih baik.
 
-- <article>: Digunakan untuk mengelompokkan konten independen atau mandiri dalam sebuah halaman web. Ini bisa berupa berita, posting blog, atau konten lain yang dapat berdiri sendiri.
+- `<article>`: Digunakan untuk mengelompokkan konten independen atau mandiri dalam sebuah halaman web. Ini bisa berupa berita, posting blog, atau konten lain yang dapat berdiri sendiri.
 
-- <section>: Digunakan untuk mengelompokkan konten yang terkait atau serupa dalam sebuah halaman web. Ini membantu dalam mengorganisasi dan memahami struktur dokumen.
+- `<section>`: Digunakan untuk mengelompokkan konten yang terkait atau serupa dalam sebuah halaman web. Ini membantu dalam mengorganisasi dan memahami struktur dokumen.
 
-- <aside>: Digunakan untuk mengelompokkan konten yang terkait dengan konten utama, tetapi bisa dianggap sebagai konten sampingan. Ini sering digunakan untuk menyertakan elemen seperti sidebar atau widget.
+- `<aside>`: Digunakan untuk mengelompokkan konten yang terkait dengan konten utama, tetapi bisa dianggap sebagai konten sampingan. Ini sering digunakan untuk menyertakan elemen seperti sidebar atau widget.
 
-- <footer>: Digunakan untuk mendefinisikan bagian bawah dari sebuah halaman atau elemen. Ini sering digunakan untuk menampilkan informasi kontak, tautan ke halaman terkait, atau hak cipta.
+- `<footer>`: Digunakan untuk mendefinisikan bagian bawah dari sebuah halaman atau elemen. Ini sering digunakan untuk menampilkan informasi kontak, tautan ke halaman terkait, atau hak cipta.
 
-- <figure> dan <figcaption>: Digunakan bersama untuk menampilkan konten media, seperti gambar, audio, atau video, dengan elemen <figcaption> digunakan untuk memberikan deskripsi atau keterangan untuk konten media tersebut.
+- `<figure>` dan `<figcaption>`: Digunakan bersama untuk menampilkan konten media, seperti gambar, audio, atau video, dengan elemen <figcaption> digunakan untuk memberikan deskripsi atau keterangan untuk konten media tersebut.
 
-- <video> dan <audio>: Digunakan untuk menambahkan media video atau audio ke halaman web. Ini memungkinkan untuk menyematkan video dan audio dengan dukungan yang lebih baik.
+- `<video>` dan `<audio>`: Digunakan untuk menambahkan media video atau audio ke halaman web. Ini memungkinkan untuk menyematkan video dan audio dengan dukungan yang lebih baik.
 
-- <canvas>: Digunakan untuk membuat gambar dan grafik dengan menggunakan JavaScript. Ini sering digunakan untuk menggambar grafik interaktif atau animasi di halaman web.
+- `<canvas>`: Digunakan untuk membuat gambar dan grafik dengan menggunakan JavaScript. Ini sering digunakan untuk menggambar grafik interaktif atau animasi di halaman web.
 
-- <input type="date/time/color>: Digunakan untuk menampilkan elemen input dengan tipe khusus, seperti input tanggal, waktu, atau warna. Ini membantu dalam mengumpulkan data yang spesifik.
+- `<input type="date/time/color>`: Digunakan untuk menampilkan elemen input dengan tipe khusus, seperti input tanggal, waktu, atau warna. Ini membantu dalam mengumpulkan data yang spesifik.
 
-- <progress>: Digunakan untuk menampilkan elemen kemajuan yang mengukur kemajuan atau status dari tugas yang sedang berlangsung.
+- `<progress>`: Digunakan untuk menampilkan elemen kemajuan yang mengukur kemajuan atau status dari tugas yang sedang berlangsung.
 
-- <meter>: Digunakan untuk menampilkan elemen meteran yang mengukur dan menampilkan nilai dalam bentuk grafik, seperti seberapa besar persentase suatu tugas yang selesai.
+- `<meter>`: Digunakan untuk menampilkan elemen meteran yang mengukur dan menampilkan nilai dalam bentuk grafik, seperti seberapa besar persentase suatu tugas yang selesai.
 
-- <details> dan <summary>: Digunakan bersama untuk membuat elemen yang dapat diperluas (expandable) dan berisi konten tambahan yang dapat ditampilkan atau disembunyikan dengan mengklik tautan <summary>.
+- `<details>` dan `<summary>`: Digunakan bersama untuk membuat elemen yang dapat diperluas (expandable) dan berisi konten tambahan yang dapat ditampilkan atau disembunyikan dengan mengklik tautan <summary>.
 
-- <mark>: Digunakan untuk menyoroti teks atau konten dalam dokumen dengan warna latar belakang kuning, biasanya digunakan untuk menandai kata kunci atau teks penting.
+- `<mark>`: Digunakan untuk menyoroti teks atau konten dalam dokumen dengan warna latar belakang kuning, biasanya digunakan untuk menandai kata kunci atau teks penting.
 
 
 ## Jelaskan perbedaan antara margin dan padding.
