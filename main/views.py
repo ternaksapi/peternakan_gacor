@@ -9,6 +9,9 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseNotFound
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
 # Create your views here.
 @login_required(login_url='/login')
@@ -81,3 +84,22 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     return redirect('main:login')
+
+def get_item_json(request):
+    item = Items.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize("json", item))
+
+@csrf_exempt
+def add_item_ajax(request):
+    if request.method == "POST":
+        name = request.POST.get('name')
+        amount = request.POST.get('amount')
+        description = request.POST.get('description')
+        user = request.user
+
+        item = Items(name=name, amount=amount, description=description, user=user)
+        item.save()
+
+        return HttpResponse(b"CREATED", status=201)
+
+    return HttpResponseNotFound()

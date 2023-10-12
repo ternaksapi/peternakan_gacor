@@ -14,28 +14,170 @@
     <h4>Peternakan terbaik se-kukusan</h4>
     <br>
 
-    {% for product in products %}
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="card-title">Nama Barang:</h5>
-            <p class="card-text">{{ product.name }}</p>
-            <h5 class="card-title">Deskripsi Barang:</h5>
-            <p class="card-text">{{ product.description }}</p>
-            <h5 class="card-title">Jumlah Barang:</h5>
-            <p class="card-text">{{ product.amount }} buah</p>
-        </div>
-    </div>
-    {% endfor %}
+<div id="itemContainer">
+
+</div>
 
     <div class="text-center">
         <a href="{% url 'main:create_items' %}">
             <button class="btn btn-primary">Add New Items</button>
         </a>
     </div>
+    <br>
+    <div class="text-center">
+        <button id="add-item-button" class="btn btn-primary">Add New Items by AJAX</button>
+    </div>
 
     <div class="text-center mt-4">
         <h5>Sesi terakhir login: {{ last_login }}</h5>
         <h5>Muhammad Yusuf Haikal PBP F 22060801490</h5>
     </div>
+
+    <div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="addItemModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addItemModalLabel">Add New Item</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="addItemForm">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="name">Name:</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description:</label>
+                            <textarea class="form-control" id="description" name="description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">Amount:</label>
+                            <input type="number" class="form-control" id="amount" name="amount" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="closeModalButton">Close</button>
+                    <button type="button" class="btn btn-primary" id="addItemSubmit">Add Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
 </div>
+<script>
+    async function getItems(){
+        const response = await fetch("{%url 'main:get_item_json' %}");
+        const data = await response.json();
+        return data;
+}
+
+    async function refreshItem(items){
+        const itemContainer = document.getElementById("itemContainer");
+        itemContainer.innerHTML = "";
+        items.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "card mb-3 product card";
+
+            const cardBody = document.createElement("div");
+            cardBody.className = "card-body";
+
+            const cardHeaderNama = document.createElement("h5");
+            cardHeaderNama.className = "card-title";
+            cardHeaderNama.textContent = "Nama Barang:"
+
+            const cardNama = document.createElement("p");
+            cardNama.className = "card-text";
+            cardNama.textContent = item.fields.name;
+
+            const cardHeaderDescription = document.createElement("h5");
+            cardHeaderDescription.className = "card-title";
+            cardHeaderDescription.textContent = "Deskripsi Barang:"
+
+            const cardDescription = document.createElement("p");
+            cardDescription.className = "card-text";
+            cardDescription.textContent = item.fields.description;
+
+            const cardHeaderAmount = document.createElement("h5");
+            cardHeaderAmount.className = "card-title";
+            cardHeaderAmount.textContent = "Jumlah Barang:"
+
+            const cardAmount = document.createElement("p");
+            cardAmount.className = "card-text";
+            cardAmount.innerHTML = item.fields.amount;
+
+            cardBody.appendChild(cardHeaderNama);
+            cardBody.appendChild(cardNama);
+            cardBody.appendChild(cardHeaderDescription);
+            cardBody.appendChild(cardDescription);
+            cardBody.appendChild(cardHeaderAmount);
+            cardBody.appendChild(cardAmount);
+            card.appendChild(cardBody);
+            itemContainer.appendChild(card);
+        });
+    }
+    getItems().then(items => {
+        refreshItem(items);
+    });
+    // Show the modal when the "Add New Items" button is clicked
+    document.getElementById("add-item-button").addEventListener("click", function () {
+        $('#addItemModal').modal('show');
+    });
+
+    // Handle form submission via AJAX
+    document.getElementById("addItemSubmit").addEventListener("click", function () {
+        const form = document.getElementById("addItemForm");
+        const formData = new FormData(form);
+
+        fetch("{% url 'main:add_item_ajax' %}", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.text();
+                    })
+        .then(data => {
+            // Close the modal using JavaScript
+            $('#addItemModal').modal('hide');
+            // Clear the form fields
+            form.reset();
+            //
+            getItems().then(products => {
+                refreshItem(products);
+            });
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+        });
+    });
+    
+    document.getElementById("closeModalButton").addEventListener("click", function () {
+    // Close the modal using Bootstrap modal functions
+    $('#addItemModal').modal('hide');
+    });
+
+    // Helper function to get the CSRF token
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            var cookies = document.cookie.split(";");
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === name + "=") {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+    
 {% endblock content %}
