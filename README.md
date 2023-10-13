@@ -514,7 +514,234 @@ urlpatterns = [
 
 # Tugas 4
 
-# Tugas 4
+## Apa itu Django  `UserCreationForm` dan jelaskan apa kelebihan dan kekurangannya
+`UserCreationForm` merupakan impor formulir bawaan yang memudahkan pembuatan formulir pendaftaran pengguna dalam aplikasi web yang dikembangkan dengan Django. 
+Kelebihan yang paling utama dari `UserCreationForm` adalah kemudahan dalam pembuaan formulir pendaftaran. Selain itu, `UserCreationForm` sudah terintegrasi dengan model pengguna Django, sehingga mempermudah penyimpanan data yang dimasukkan kedalam form pendaftaran menuju database. Kekurangan dari `UserCreationForm` terdapat pada keterbatasan ** customization ** yang dapat dilakukan, hanya mencakup isian data standar seperti nama pengguna, kata sandi, dst. Jika ingin melakukan kustomisasi, prosesnya lumayan rumit. 
+## Apa perbedaan antara autentikasi dan otorisasi dalam konteks Django, dan mengapa keduanya penting?
+Autentikasi merupakan proses memverifikasi identitas pengguna. Ini membuktikan bahwa pengguna yang mengakses aplikasi adalah orang yang mereka klaim, sementara otorisasi merupakan proses menentukan hak akses pengguna setelah mereka terautentikasi. Ini berkaitan dengan mengontrol apa yang dapat dilihat, dibaca, ditulis, atau diubah oleh pengguna yang telah terotentikasi. Keduanya merupakan konsep yang penting untuk menjaga kemanan aplikasi yang kita buat, siapa yang dapat mengakses dan siapa yang mengakses perlu kita ketahui agar menghindari penggunaan akses yang tidak diinginkan terjadi.
+## Apa itu cookies dalam konteks aplikasi web, dan bagaimana Django menggunakan cookies untuk mengelola data sesi pengguna?
+Karena dalam pengembangan aplikasi web yang menggunnakan HTTP bersifat stateless, dimana setiap aktivitas (request/response) bersifat independen, tidak tersimpan pada aktivitas terdahulu, ini mengharuskan komputer klien yang menjalankan browser untuk membuat koneksi TCP ke server setiap kali melakukan request. Cookies adalah data kecil yang disimpan di sisi klien (biasanya dalam browser web) oleh server aplikasi web. Cookies digunakan untuk menyimpan informasi yang berkaitan dengan sesi atau interaksi pengguna dengan aplikasi web. Mereka berguna untuk mengenali pengguna ketika mereka kembali ke situs web, menyimpan preferensi atau informasi login, dan menyediakan pengalaman yang lebih personal.Django, seperti banyak kerangka kerja web lainnya, menggunakan cookies untuk mengelola data sesi pengguna. Data sesi pengguna adalah informasi yang berhubungan dengan sesi pengguna saat dia sedang berinteraksi dengan aplikasi web.
+## Apakah penggunaan cookies aman secara default dalam pengembangan web, atau apakah ada risiko potensial yang harus diwaspadai?
+Penggunaan cookies dalam pengembangan web adalah alat yang umum digunakan dan aman secara default jika diimplementasikan dengan benar. Namun, tetap terdapat bebara resiko keamanan seperti *session hijacking* di mana seorang penyerang mencuri cookie sesi pengguna untuk mengakses akun pengguna tanpa izin.
+## Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step
+### Mengimplementasikan fungsi registrasi, login, dan logout untuk memungkinkan pengguna untuk mengakses aplikasi sebelumnya dengan lancar.
+- Pertama, untuk fungsi registrasi, lakukan perubahan dalam file `views.py` dalam folder `main` lalu buat fungsi dengan nama `register`. Lakukan impor terlebih dahulu:
+```
+from django.shortcuts import redirect
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages  
+```
+- Buat fungsi register yang menerima parameter request sebagai berikut: 
+```
+def register(request):
+    form = UserCreationForm()
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been successfully created!')
+            return redirect('main:login')
+    context = {'form':form}
+    return render(request, 'register.html', context)
+```
+Fungsi ini akan membuat `UserCreationForm` baru dengan memasukkan QueryDictberdasarkan inpus user.
+- Buat file HTML baru untuk halaman regisrasi dalam folder `main/template` yang bernama `register.html`. Isi folder adalah sebagai berikut:
+```
+{% extends 'base.html' %}
+{% block meta %}
+    <title>Register</title>
+{% endblock meta %}
+{% block content %}  
+<div class = "login">
+    
+    <h1>Register</h1>  
+        <form method="POST" >  
+            {% csrf_token %}  
+            <table>  
+                {{ form.as_table }}  
+                <tr>  
+                    <td></td>
+                    <td><input type="submit" name="submit" value="Daftar"/></td>  
+                </tr>  
+            </table>  
+        </form>
+    {% if messages %}  
+        <ul>   
+            {% for message in messages %}  
+                <li>{{ message }}</li>  
+                {% endfor %}  
+        </ul>   
+    {% endif %}
+</div>  
+{% endblock content %}
+```
+Ini akan menjadi template ketika kita mengakses halaman register nanti.
+- Lakukan routing pada `urls.py` folder main untuk menghubungkan fungsi yang telah dibuat. 
+```
+from main.views import register #sesuaikan dengan nama fungsi yang dibuat
+```
+lalu tambahkan ke path url dalam `urlpatterns`
+```
+path('register/', register, name='register')
+```
+- Untuk membuat fungsi login, tambahkan fungsi `login_user` kedalam `views.py`. Import `authenticate` dan `login` terlebih dahulu.
+```
+from django.contrib.auth import authenticate, login
+```
+- Buat fungsi `login_user` yang menerima request sebagai parameter.
+```
+def login_user(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('main:show_main')
+        else:
+            messages.info(request, 'Sorry, incorrect username or password. Please try again.')
+    context = {}
+    return render(request, 'login.html', context)
+```
+Fungsi ini akan menerima username dan password dari penggunaka kemudian melakukan autentikasi berdasarkan username dan password yang diterima.
+- Buat template untuk halaman login dalam folder `main/templates` yang bernama `login.html`. Isinya seperti berikut:
+```
+{% extends 'base.html' %}
+{% block meta %}
+    <title>Login</title>
+{% endblock meta %}
+{% block content %}
+<div class = "login">
+    <h1>Login</h1>
+    <form method="POST" action="">
+        {% csrf_token %}
+        <table>
+            <tr>
+                <td>Username: </td>
+                <td><input type="text" name="username" placeholder="Username" class="form-control"></td>
+            </tr>
+                    
+            <tr>
+                <td>Password: </td>
+                <td><input type="password" name="password" placeholder="Password" class="form-control"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><input class="btn login_btn" type="submit" value="Login"></td>
+            </tr>
+        </table>
+    </form>
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}     
+        
+    Don't have an account yet? <a href="{% url 'main:register' %}">Register Now</a>
+</div>
+{% endblock content %}
+```
+- Lakukan routing fungsi pada file `urls.py` dalam `main`. impor fungsi yang telah dibuat tadi
+```
+from main.views import login_user
+```
+lalu tambahkan path url kedalam `urlpatterns`
+```
+path('logout/', logout_user, name='logout')
+```
+- Kita juga dapat membatasi agar halaman Main hanya dapat dilihat oleh user yang telah login. 
+- Buka file `views.py`, lakukan import:
+```
+from django.contrib.auth.decorators import login_required
+```
+lalu diatas ` def show_main`, tambahkan 
+`@login_required(login_url='/login')`
+### Membuat dua akun pengguna dengan masing-masing tiga dummy data menggunakan model yang telah dibuat pada aplikasi sebelumnya untuk setiap akun di lokal & Menghubungkan model Item dengan User.
+Untuk memisahkan data yang dimiliki masinng - masing akun, kita perlu menghubungkan model `Item` dengan `User`.
+- Pertama, import User kedalam file `models.py`.
+```
+from django.contrib.auth.models import User
+```
+lalu, kedalam model yang saya gunakan, yaitu `Items`, tambahkan `user`.
+```
+class Items(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    amount = models.IntegerField()
+    description = models.TextField()
+```
+- Buka `views.py` dalam folder `main` lalu lakukan perubahan pada fungsi yang berfungsi untuk menambahkan items, yaitu `create_items`.
+```
+def create_items(request):
+    form = ItemsForm(request.POST or None)
+    if form.is_valid() and request.method == "POST":
+        item = form.save(commit=False)
+        item.user = request.user
+        item.save()
+        return HttpResponseRedirect(reverse('main:show_main'))
+    
+    context = {'form' : form}
+    return render(request, "create_product.html", context)
+```
+Modifikasi ini dilakukan untuk menyimpan data user terlebih dahulu sebelum menyimpan form ke database, sehingga menandakan bahwa apa yang diisi dimiliki oleh user yang sedang login.
+- Ubah `show_main` untuk hanya menunjukkan item dari user yang sedang login.
+```
+def show_main(request):
+    items = Items.objects.filter(user=request.user)
+    context = {
+        'name' : request.user.username,
+        ...
+    }
+```
+Lakukan migrasi sebelum menjalankan program karena telah terjadi perubahan models.
+- Untuk membuat akun dan dummy data, kita tinggal lakukan register kemudian mengisi form menambah barang.
+### Menampilkan detail informasi pengguna yang sedang logged in seperti username dan menerapkan cookies seperti last login pada halaman utama aplikasi.
+- Untuk menggunakan detail informasi pengguna yang sedang logged in, kita memerlukan cookies. 
+- Modifikasi file `views.py` dalam folder `main` lalu lakukan beberapa import.
+```
+import datetime
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+```
+- Tambahkan cookie pada fungsi `login_user` yang akan menyimmpan kapan terakhir user melakukan login.
+```
+def login_user(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate (request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            response = HttpResponseRedirect(reverse('main:show_main'))
+            response.set_cookie('last_login', str(datetime.datetime.now()))
+            return response
+        else:
+            messages.info(request, 'Sorry, incorrect username or password. Please try again.')
+    context = {}
+    return render(request, 'login.html', context)
+```
+- Lakukan perubahan pada fungsi `show_main` pada bagian `context` yang akan mengambil data dari cookie tadi.
+```
+def show_main(request):
+    items = Items.objects.filter(user=request.user)
+    context = {
+        'name' : request.user.username,
+        'products' : items,
+        'last_login':request.COOKIES['last_login'],
+    }
+    return render(request, "main.html", context)
+```
+- Ubah folder `main.html` untuk menampilkan data dari cookie tadi. Kita akan menampilkan waktu terakhir user login:
+```
+...
+<h5>Sesi terakhir login: {{ last_login }}</h5>
+...
+```
+- Refresh halaman login.
+
+# Tugas 5
 
 ##  Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step!
 
@@ -818,3 +1045,332 @@ Perbedaan antara margin dan padding adalah bahwa margin adalah ruang di luar ele
 ## Jelaskan perbedaan antara framework CSS Tailwind dan Bootstrap. Kapan sebaiknya kita menggunakan Bootstrap daripada Tailwind, dan sebaliknya?
 
 Perbedaan utama antara framework CSS Bootstrap dan Tailwind adalah dalam desain dan pendekatan pengembangan yang digunakan. Bootstrap memiliki template desain untuk berbagai komponen yang beragam sehingga merupakan pilihan baik untuk proyek-proyek yang ingin dibangun dengan cepat dan membutuhkan gaya tampilan yang profesional. Di sisi lain, Tailwind memberikan tingkat kustomisasi yang lebih tinggi dengan pendekatan * utility first * yang memungkinkan pengembang untuk membangun tampilan yang sangat unik dan sesuai dengan kebutuhan desain mereka. Tailwind juga lebih ringan dan efisien dalam hal ukuran dan kinerja halaman web. Pilihan antara keduanya tergantung pada preferensi pengembang dan kebutuhan spesifik proyek, jika ingin membangun proyek yang cepat dan sederhana, serta mudah untuk dibuat maka gunakan Bootstrap. Apabila ingin membangun proyek dengan kebebasan yang lebih banyak, namun harus melakukan lebih banyak * coding *, gunakan Tailwind.
+
+# Tugas 6
+
+## Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step
+
+### Ubahlah kode cards data item agar dapat mendukung AJAX GET & Lakukan pengambilan task menggunakan AJAX GET.
+
+- Untuk tahap ini, saya akan mengubah sistem cards agar pemanggilan data dilakukan dengan menggunakan `Fetch()` API. Saya menggunakan `Fetch()` API karena secara default, `Fetch()` menggunakan method `GET` untuk mengirim request.
+
+- Pertama, saya membuat function baru dalam `views.py` untuk mengembalikan data dalam bentuk JSON, yang kemudian akan digunakan dalam `fetch`. Fungsi akan saya namakan `get_item_json` yang akan menerima parameter request.
+```
+def get_item_json(request):
+    item = Items.objects.filter(user=request.user)
+    return HttpResponse(serializers.serialize("json", item))
+```
+
+- Tambahkan routing function yang telah dibuat kedalam `urls.py`
+```
+...    path('get-item/', get_item_json, name='get_item_json'),
+```
+
+- Function akan mengembalikan item sesuai dengan user yang meminta, sehingga nanti item yang ditampilkan hanya item yang dibuat oleh user yang sedang login.
+
+- Selanjutnya, saya akan mengubah file `main.html`. Sebelumnya, isi file seperti berikut:
+```
+...
+   {% for product in products %}
+    <div class="card mb-3 product-card" data-product-id="{{ product.id }}">
+        <div class="card-body">
+            <h5 class="card-title">Nama Barang:</h5>
+            <p class="card-text">{{ product.name }}</p>
+            <h5 class="card-title">Deskripsi Barang:</h5>
+            <p class="card-text">{{ product.description }}</p>
+            <h5 class="card-title">Jumlah Barang:</h5>
+            <p class="card-text">{{ product.amount }} buah</p>
+        </div>
+    </div>
+    {% endfor %}
+...
+```
+- Saya akan memindahkan agar pembuatan cards masing - masing items dilakukan dalam embedded JavaScript dalam file `main.html`. Saya menghapus bagian tersebut dan menggantinya dengan 
+```
+...
+<div id="productContainer">
+
+</div>
+...
+```
+- Ini akan menjadi tempat cards nanti diletakkan, dengan `id='productContainer'` menjadi id yang akan kita gunakan sebagai reference.
+
+- Selanjutnya, kita akan membuat function dalam blok `<Script>` yang digunakan menggunakan fetch() API ke datan JSON secara asynchronous dan untuk parsing data JSON menjadi objek JavaScript.
+
+```
+<script>
+  async function getItems(){
+        const response = await fetch("{%url 'main:get_item_json' %}");
+        const data = await response.json();
+        return data;
+}
+</script>
+```
+
+- Kemudian, kita akan membuat function yang akan merefresh item yang tersimpan.
+```
+<script>
+...
+async function refreshItem(items){
+        const itemContainer = document.getElementById("itemContainer");
+        itemContainer.innerHTML = "";
+        items.forEach(item => {
+            const card = document.createElement("div");
+            card.className = "card mb-3 product card";
+
+            const cardBody = document.createElement("div");
+            cardBody.className = "card-body";
+
+            const cardHeaderNama = document.createElement("h5");
+            cardHeaderNama.className = "card-title";
+            cardHeaderNama.textContent = "Nama Barang:"
+
+            const cardNama = document.createElement("p");
+            cardNama.className = "card-text";
+            cardNama.textContent = item.fields.name;
+
+            const cardHeaderDescription = document.createElement("h5");
+            cardHeaderDescription.className = "card-title";
+            cardHeaderDescription.textContent = "Deskripsi Barang:"
+
+            const cardDescription = document.createElement("p");
+            cardDescription.className = "card-text";
+            cardDescription.textContent = item.fields.description;
+
+            const cardHeaderAmount = document.createElement("h5");
+            cardHeaderAmount.className = "card-title";
+            cardHeaderAmount.textContent = "Jumlah Barang:"
+
+            const cardAmount = document.createElement("p");
+            cardAmount.className = "card-text";
+            cardAmount.innerHTML = item.fields.amount;
+
+            cardBody.appendChild(cardHeaderNama);
+            cardBody.appendChild(cardNama);
+            cardBody.appendChild(cardHeaderDescription);
+            cardBody.appendChild(cardDescription);
+            cardBody.appendChild(cardHeaderAmount);
+            cardBody.appendChild(cardAmount);
+            card.appendChild(cardBody);
+            itemContainer.appendChild(card);
+        });
+    }
+    getItems().then(items => {
+        refreshItem(items);
+    ...
+</script>
+```
+- Function tersebut akan memperbarui card untuk setiap item yang terdapat dalam paramater `Items` setiap dipanggil. Kemudian, kita memanggil `getItems()` dan memamggil `refreshItem(items)` untuk menjalankan kedua fungsi saat web dibuka. Sekarang kode cards data item mendukung AJAX GET.
+
+### Buatlah sebuah tombol yang membuka sebuah modal dengan form untuk menambahkan item.
+
+- Buat sebuah button dengan class button dari Bootstrap didalam berkas `main.html` yang akan digunakan untuk menampilkan modal.
+```
+...
+    <div class="text-center">
+        <button id="add-item-button" class="btn btn-primary">Add New Items by AJAX</button>
+    </div>
+...
+```
+
+- Selanjutnya, buat modal yang sesuai dengan atribut yang dimiliki items. 
+```
+...
+<div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="addItemModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addItemModalLabel">Add New Item</h5>
+                </div>
+                <div class="modal-body">
+                    <form id="addItemForm">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="name">Name:</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Description:</label>
+                            <textarea class="form-control" id="description" name="description" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">Amount:</label>
+                            <input type="number" class="form-control" id="amount" name="amount" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="closeModalButton">Close</button>
+                    <button type="button" class="btn btn-primary" id="addItemSubmit">Add Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+...
+```
+
+- Tambahkan event listener untuk menampilkan modal ketika tombol yang baru kita tambahkan ditekan.
+```
+    document.getElementById("add-item-button").addEventListener("click", function () {
+        $('#addItemModal').modal('show');
+    });
+```
+
+### Buatlah fungsi view baru untuk menambahkan item baru ke dalam basis data.
+
+- Buat function dalam `views.py` yang bertujuan untuk menambahkan produk dengan AJAX
+```
+@csrf_exempt
+def add_item_ajax(request):
+    if request.method == "POST":
+        name = request.POST.get('name')
+        amount = request.POST.get('amount')
+        description = request.POST.get('description')
+        user = request.user
+
+        item = Items(name=name, amount=amount, description=description, user=user)
+        item.save()
+
+        return HttpResponse(b"CREATED", status=201)
+
+    return HttpResponseNotFound()
+
+```
+
+### Buatlah path `/create-ajax/` yang mengarah ke fungsi view yang baru kamu buat.
+
+- Tambahkan routing untuk function yang baru dibuat kedalam `urls.py`
+```
+    path('create-ajax/', add_item_ajax, name='add_item_ajax')
+```
+
+### Hubungkan form yang telah kamu buat di dalam modal kamu ke path `/create-ajax/`.
+
+- Buat event listener untuk tombol yang terdapat dalam modal. Pertama, untuk tombol `Add Item`
+```
+  document.getElementById("addItemSubmit").addEventListener("click", function () {
+        const form = document.getElementById("addItemForm");
+        const formData = new FormData(form);
+
+        fetch("{% url 'main:add_item_ajax' %}", {
+            method: "POST",
+            body: formData,
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken")
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.text();
+                    })
+        .then(data => {
+            $('#addItemModal').modal('hide');
+            form.reset();
+        })
+        .catch(error => {
+            console.error("Fetch error:", error);
+        });
+    });
+```
+
+- Kemudian, buat event listener untuk tombol close
+```
+    document.getElementById("closeModalButton").addEventListener("click", function () {
+    $('#addItemModal').modal('hide');
+    });
+```
+
+### Lakukan refresh pada halaman utama secara asinkronus untuk menampilkan daftar item terbaru tanpa reload halaman utama secara keseluruhan.
+
+- Dalam event listener tombol `Add Item`, ubah agar ketika form disubmit, function `refreshItem()` dijalankan, merefresh halaman utama secara asinkronus untuk menampilkan daftar item terbaru
+```
+document.getElementById("addItemSubmit").addEventListener("click", function () {
+    ...
+ .then(data => {
+            $('#addItemModal').modal('hide');
+            form.reset();
+            getItems().then(products => {
+                refreshItem(products);
+            });
+        })
+    ...
+```
+
+### Melakukan perintah collectstatic.
+- Ubah file `settings.py` lalu isi `STATIC_ROOT` menjadi tempat staticfiles nanti akan diletakkan. Saya menggunakan `BASE_DIR`
+```
+...
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_URL = 'static/'
+...
+```
+- Buka cmd dalam directory proyek, lalu jalankan perintah `python manage.py collectstatic`. Kemudian, akan muncul line `125 static files copied to ... `
+
+
+## Jelaskan perbedaan antara asynchronous programming dengan synchronous programming.
+
+Asynchronous programming dan synchronous programming adalah dua paradigma pemrograman yang berbeda dalam cara mereka mengelola tugas-tugas atau operasi yang memerlukan waktu. Berikut adalah perbedaan utama antara keduanya:
+
+1. Synchronous Programming (Program Sinkron):
+
+- Dalam synchronous programming, tugas-tugas dieksekusi secara berurutan, satu per satu.
+- Ketika sebuah tugas dimulai, program akan menunggu hingga tugas tersebut selesai sebelum melanjutkan eksekusi tugas berikutnya.
+- Ini adalah pendekatan yang mudah dipahami dan diimplementasikan, karena urutan eksekusi adalah linier.
+
+2. Asynchronous Programming (Program Asinkron):
+- Dalam asynchronous programming, tugas-tugas dieksekusi secara bersamaan atau tidak menunggu satu sama lain.
+- Ketika sebuah tugas dimulai, program tidak akan menunggu tugas tersebut selesai; sebaliknya, ia akan melanjutkan eksekusi tugas berikutnya.
+- Asynchronous programming berguna ketika ada tugas yang memerlukan waktu lama, seperti operasi jaringan atau berkas, yang dapat memperlambat program secara keseluruhan jika dieksekusi secara sinkron.
+ 
+3. Contoh Penggunaan:
+- Synchronous: Synchronous programming cocok untuk tugas-tugas sederhana yang dapat segera dieksekusi, seperti perhitungan matematis kecil.
+- Asynchronous: Asynchronous programming berguna ketika Anda perlu melakukan tugas I/O-bound (Input/Output) yang melibatkan pembacaan atau penulisan data ke disk, operasi jaringan seperti permintaan HTTP, atau tugas yang melibatkan waktu tunggu, seperti animasi dan responsifitas antarmuka pengguna.
+
+4. Callbacks vs. Await/Async:
+- Dalam asynchronous programming, Anda sering menggunakan konsep callback atau promis/await (pada bahasa pemrograman modern) untuk mengelola operasi asinkron. Callbacks adalah fungsi yang akan dipanggil ketika operasi asinkron selesai, sedangkan promis/await menyediakan cara yang lebih bersih dan mudah dipahami untuk menulis kode asinkron.
+
+5. Kesulitan:
+- Synchronous programming cenderung lebih mudah dipahami dan di-debug karena urutan eksekusi adalah linear.
+- Asynchronous programming dapat menjadi lebih rumit karena Anda perlu memahami cara mengelola aliran eksekusi dan menghindari potensi masalah seperti race conditions dan callback hell.
+
+6. Responsifitas:
+- Asynchronous programming meningkatkan responsifitas aplikasi karena tidak menghalangi utas utama eksekusi dengan operasi yang memerlukan waktu lama.
+Pilihan antara synchronous dan asynchronous programming bergantung pada jenis aplikasi yang Anda kembangkan dan tujuannya. Dalam beberapa kasus, Anda mungkin perlu menggabungkan keduanya untuk mencapai keseimbangan yang tepat antara efisiensi dan responsivitas.
+
+## Dalam penerapan JavaScript dan AJAX, terdapat penerapan paradigma event-driven programming. Jelaskan maksud dari paradigma tersebut dan sebutkan salah satu contoh penerapannya pada tugas ini.
+Paradigma event-driven programming adalah suatu pendekatan dalam pemrograman di mana aliran eksekusi program sangat dipengaruhi oleh kejadian (events) yang terjadi. Contohnya adalah dalam penerapan penambahan produk, dimana terdapat event handler yang akan menghandle ketika terjadi click pada tombol, saat itu juga baru produk masuk kedalam database, dan list produk terefresh.
+
+## Jelaskan penerapan asynchronous programming pada AJAX
+Asynchronous programming pada AJAX (Asynchronous JavaScript and XML) adalah konsep utama yang memungkinkan Anda untuk melakukan permintaan data dari server tanpa menghentikan eksekusi program utama (misalnya, pada aplikasi web). Hal ini sangat berguna karena operasi jaringan seperti mengambil data dari server biasanya memerlukan waktu, dan jika dilakukan secara sinkron (menunggu hingga operasi selesai), hal ini dapat membuat aplikasi menjadi lambat dan tidak responsif.
+
+Ketika sebuah request AJAX dikirim, JavaScript dapat melanjutkan proses yang lain berjalan tanpa harus menunggu respon dari server, sehingga halaman tetap responsif walau request masih menunggu balasan yang sesuai dengan request.
+
+## Pada PBP kali ini, penerapan AJAX dilakukan dengan menggunakan Fetch API daripada library jQuery. Bandingkanlah kedua teknologi tersebut dan tuliskan pendapat kamu teknologi manakah yang lebih baik untuk digunakan.
+
+Perbedaan utama antara Fetch dan library jQuery adalah Fetch menggunakan `Promise` untuk membuat sebuah request, dimana library jQuery menggunakan `XMLHttpRequest`. Berikut adalah beberapa perbandingan dari beberapa aspek antara Fetch API dan library jQuery.
+
+1. Kompatibilitas:
+- Fetch API adalah API JavaScript modern yang dibangun langsung ke dalam browser. Ini berarti Anda tidak perlu mengunduh atau memasang pustaka eksternal. Ini mendukung oleh sebagian besar browser modern.
+- jQuery adalah pustaka JavaScript eksternal yang perlu diunduh dan dimasukkan dalam proyek Anda. Meskipun banyak browser mendukung jQuery, Anda perlu memastikan bahwa versi jQuery yang Anda gunakan kompatibel dengan browser yang Anda targetkan.
+
+2. Ukuran:
+- Fetch API adalah lebih ringan karena merupakan bagian dari JavaScript standar dan hanya menyediakan fungsionalitas terkait permintaan HTTP.
+- jQuery adalah lebih besar karena merupakan pustaka yang menyediakan berbagai fitur, bukan hanya AJAX. Ini dapat menambahkan overhead yang tidak perlu jika Anda hanya perlu mengelola permintaan AJAX.
+
+3. Kemudahan Penggunaan:
+- jQuery dirancang untuk menyederhanakan berbagai tugas dalam pengembangan web, termasuk AJAX. Ini menyediakan antarmuka yang mudah digunakan, khususnya bagi pengembang yang baru.
+- Fetch API lebih "murni" dan memerlukan lebih banyak kode untuk melakukan tugas yang sama. Namun, beberapa orang menganggapnya lebih bersih dan lebih eksplisit.
+
+4. Fleksibilitas:
+- Fetch API lebih fleksibel dan dapat berintegrasi lebih baik dengan ekosistem modern seperti Promises dan async/await. Ini memberikan kontrol yang lebih besar terhadap aliran eksekusi.
+- jQuery menawarkan abstraksi yang lebih tinggi, yang dapat mempermudah pengembangan tetapi mungkin mengorbankan sebagian fleksibilitas.
+
+5. Performa:
+- Karena Fetch API adalah bagian dari JavaScript standar, ini cenderung lebih cepat dan efisien dalam hal performa. Ini dapat menjadi pilihan yang lebih baik untuk permintaan yang intensif secara kinerja.
+- jQuery memiliki overhead karena library ini menyediakan banyak fitur selain AJAX. Oleh karena itu, dalam situasi di mana performa sangat penting, Fetch API mungkin lebih baik.
+
+6. Ekosistem dan Dukungan Komunitas:
+- jQuery memiliki ekosistem yang luas, tutorial, dan plugin yang dapat membantu Anda dalam pengembangan.
+- Fetch API juga memiliki dukungan komunitas yang kuat, tetapi mungkin kurang memiliki ekosistem yang sebanyak jQuery.
