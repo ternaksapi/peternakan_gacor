@@ -44,7 +44,7 @@ def show_json(request):
     data = Items.objects.all()
     return HttpResponse(serializers.serialize("json", data), content_type="application/json")
 
-def show_xml_by_id(request, id):
+def show_xml_with_id(request, id):
     data = Items.objects.filter(pk=id)
     return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
 
