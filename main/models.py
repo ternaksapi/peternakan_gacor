@@ -7,7 +7,3 @@ class Items(models.Model):
     name = models.CharField(max_length=255)
     amount = models.IntegerField()
     description = models.TextField()
-
-class Employee(models.Model):
-    user =  models.OneToOneRel(User, on_delete=models.CASCADE)
-    departement = models.CharField(max_length=255)
