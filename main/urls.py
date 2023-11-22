@@ -14,5 +14,5 @@ urlpatterns = [
     path('login/', login_user, name='login'),
     path('logout/', logout_user, name='logout'),
     path('get-item/', get_item_json, name='get_item_json'),
-    path('create-ajax/', add_item_ajax, name='add_item_ajax')
+    path('create-ajax/', add_item_ajax, name='add_item_ajax'),
 ]
