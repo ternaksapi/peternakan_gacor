@@ -2,7 +2,7 @@ import datetime
 from django.shortcuts import render, redirect
 from main.forms import ItemsForm
 from django.urls import reverse
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from main.models import Items
 from django.core import serializers
 from django.contrib.auth.forms import UserCreationForm
@@ -129,9 +129,31 @@ def create_product_flutter(request):
         return JsonResponse({"status": "error"}, status=401)
     
 @csrf_exempt
-def get_item_json_user(request):
-    if request.method == 'GET':
-        item = Items.objects.filter(user=request.user)
-        return HttpResponse(serializers.serialize("json", item))
-    else:
-        return JsonResponse({"status": "error"}, status=401)
+def get_item_json_user(request: HttpRequest) -> JsonResponse:
+    # if request.method == "GET":
+    #     items = Items.objects.filter(user=request.user)
+    #     return HttpResponse(serializers.serialize("json", items))
+    # else:
+    #     return HttpResponseNotFound()
+    if not request.user.is_authenticated:
+        return JsonResponse({"status": "error"}, status=401)    
+    
+    # filter = request.GET.get('filter', 'none')
+    items = Items.objects.filter(user=request.user)
+    items_json = []
+    for item in items:
+        # if filter != "none":
+        #     continue
+        get_item = Items.objects.get(pk=item.item.id)
+        fields = {}
+        fields["id"] = item.id
+        fields["name"] = item.name
+        fields["amount"] = item.amount
+        fields["description"] = item.description
+        items_json.append({"model":"main.items", "pk":item.id, "fields": fields})
+    
+    items_json = json.dumps(items_json)
+    return JsonResponse({
+        "status": "success",
+        "items": items_json
+    }, status=200)
