@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseNotFound
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from main.models import Items
 import json
 
 # Create your views here.
@@ -144,12 +145,12 @@ def get_item_json_user(request: HttpRequest) -> JsonResponse:
     for item in items:
         # if filter != "none":
         #     continue
-        get_item = Items.objects.get(pk=item.item.id)
+        get_item = Items.objects.get(pk=item.pk)
         fields = {}
-        fields["id"] = item.id
-        fields["name"] = item.name
-        fields["amount"] = item.amount
-        fields["description"] = item.description
+        fields["id"] = get_item.pk
+        fields["name"] = get_item.name
+        fields["amount"] = get_item.amount
+        fields["description"] = get_item.description
         items_json.append({"model":"main.items", "pk":item.id, "fields": fields})
     
     items_json = json.dumps(items_json)
