@@ -137,7 +137,7 @@ def get_item_json_user(request: HttpRequest) -> JsonResponse:
     # else:
     #     return HttpResponseNotFound()
     if not request.user.is_authenticated:
-        return JsonResponse({"status": "error"}, status=401)    
+        return JsonResponse({"status": False}, status=401)    
     
     # filter = request.GET.get('filter', 'none')
     items = Items.objects.filter(user=request.user)
@@ -155,6 +155,6 @@ def get_item_json_user(request: HttpRequest) -> JsonResponse:
     
     items_json = json.dumps(items_json)
     return JsonResponse({
-        "status": "success",
+        "status": True,
         "items": items_json
     }, status=200)
